@@ -1,6 +1,9 @@
 package one.two.DataAnalysis.feature;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -32,36 +35,68 @@ public class MetaData {
 				throws IOException, InterruptedException {
 			String[] words = value.toString().split("\\,");
 			if (key.get() != 0) {
-				for (int i = 2; i < 4; i++) {
+				for (int i = 2; i < 6; i++) {
 					context.write(new Text(headers[i]), new Text(words[i]));
 				}
 			}
 
 		}
-
 	}
 
 	public static class MetaDataReducer extends Reducer<Text, Text, Text, Text> {
 		@Override
 		protected void reduce(Text key, Iterable<Text> values, Context context)
 				throws IOException, InterruptedException {
-			double max = Integer.MIN_VALUE;
-			double min = Integer.MAX_VALUE;
-			double avg = 0.0;
-			int count = 0;
-			for (Text value : values) {
-				double curr = Double.parseDouble(value.toString().trim());
-				max = max <= curr ? curr : max;
-				min = min >= curr ? curr : min;
-				avg += curr;
-				count++;
+			System.out.println(HeaderType.valueOf(
+					key.toString().trim().replaceAll("\\ ", "")).toString());
+			switch (HeaderType.valueOf(
+					key.toString().trim().replaceAll("\\ ", "")).toString()) {
+			case "number":
+				System.out.println("number me ");
+				double max = Integer.MIN_VALUE;
+				double min = Integer.MAX_VALUE;
+				double avg = 0.0;
+				Integer count = 0;
+				for (Text value : values) {
+					double curr = Double.parseDouble(value.toString().trim());
+					max = max <= curr ? curr : max;
+					min = min >= curr ? curr : min;
+					avg += curr;
+					count++;
 
+				}
+				context.write(
+						key,
+						new Text("max=" + String.valueOf(max) + "\t min="
+								+ String.valueOf(min) + "\t AVg="
+								+ String.valueOf(avg / count)));
+
+				break;
+			case "words":
+				System.out.println("words me ");
+				Map<String, Integer> countOfCat=new HashMap<String, Integer>();
+				count=0;
+				for (Text word : values) {
+					count=countOfCat.get(word.toString()) ;
+					if (null != count) {
+						countOfCat.put(key.toString(), count++);
+					}else{
+						countOfCat.put(key.toString(), 1);
+					}
+				} 
+				String tmp=new String();
+				for (Entry<String, Integer> entry : countOfCat.entrySet()) {
+					tmp+=entry.getKey()+"="+entry.getValue()+"\t";
+				}
+				context.write(key, new Text(tmp));
+				break;
+
+			default:
+				break;
 			}
-			context.write(
-					key,
-					new Text("max=" + String.valueOf(max) + "\t min="
-							+ String.valueOf(min) + "\t AVg="
-							+ String.valueOf(avg / count)));
+			
+			
+			
 
 		}
 

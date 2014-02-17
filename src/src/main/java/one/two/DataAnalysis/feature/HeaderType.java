@@ -3,7 +3,8 @@
  */
 package one.two.DataAnalysis.feature;
 
-import java.sql.Timestamp;
+import com.sun.xml.bind.v2.runtime.RuntimeUtil.ToStringAdapter;
+
 
 /**
  * @author saurabh
@@ -12,16 +13,21 @@ import java.sql.Timestamp;
 public enum HeaderType {
 	
 //	id,tstamp,Queue Time,Hold Time,Talk Time,Agent Skill,Agent Tenure,Case Severity,Answer Within Service Level,Brand,Case Status,Product,Vendor,Location,Customer Satisfaction,Satisfaction with Agent,Brand - Satisfaction,Repurchase Likelihood,Recommend Likelihood,Problem Resolution,First Contact Resolution,Resolved within 2
-	id(int.class),
-	tstamp(Timestamp.class),
-	QueueTime(int.class),
-	HoldTime(int.class),
-	TalkTime(int.class);
+	id("number"),
+	tstamp("number"),
+	QueueTime("number"),
+	HoldTime("number"),
+	TalkTime("number"),
+	AgentSkill("words"),
+	AgentTenure("words");
 	
 	
-	private Class typeOf;
-	private HeaderType(Class type) {
+	private String typeOf;
+	private HeaderType(String type) {
 		this.typeOf=type;
 	}
+	public String toString(){
+	       return typeOf;
+	    }
 
 }
