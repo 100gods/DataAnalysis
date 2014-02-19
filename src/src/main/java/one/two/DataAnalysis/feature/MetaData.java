@@ -35,7 +35,7 @@ public class MetaData {
 				throws IOException, InterruptedException {
 			String[] words = value.toString().split("\\,");
 			if (key.get() != 0) {
-				for (int i = 2; i < 6; i++) {
+				for (int i = 2; i < 11; i++) {
 					context.write(new Text(headers[i]), new Text(words[i]));
 				}
 			}
@@ -52,7 +52,7 @@ public class MetaData {
 			switch (HeaderType.valueOf(
 					key.toString().trim().replaceAll("\\ ", "")).toString()) {
 			case "number":
-				System.out.println("number me ");
+				System.out.println("number me for key ="+key.toString());
 				double max = Integer.MIN_VALUE;
 				double min = Integer.MAX_VALUE;
 				double avg = 0.0;
@@ -73,15 +73,17 @@ public class MetaData {
 
 				break;
 			case "words":
-				System.out.println("words me ");
+				System.out.println("words me for key="+key.toString());
 				Map<String, Integer> countOfCat=new HashMap<String, Integer>();
 				count=0;
 				for (Text word : values) {
-					count=countOfCat.get(word.toString()) ;
-					if (null != count) {
-						countOfCat.put(key.toString(), count++);
+				
+					
+					if (countOfCat.containsKey(word.toString())) {
+						count=countOfCat.get(word.toString()) ;
+						countOfCat.put(word.toString(), ++count);
 					}else{
-						countOfCat.put(key.toString(), 1);
+						countOfCat.put(word.toString(), 1);
 					}
 				} 
 				String tmp=new String();
