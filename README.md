@@ -1,4 +1,6 @@
 DataAnalysis
 ============
 
-Data Analysis Using Map reduce on flat file 
+Data Analysis:
+1. HDFS
+2. Map Reduce
